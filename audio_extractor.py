@@ -9,9 +9,10 @@ def download_audio(youtube_url: str) -> str:
     output_path = os.path.join(temp_dir, "audio.%(ext)s")
     
     cookie_path = os.path.join(temp_dir, "cookies.txt")
-    with open(cookie_path, "w") as f:
-        f.write(st.secrets["YOUTUBE_COOKIES"])
-    
+with open(cookie_path, "w") as f:
+    f.write(st.secrets["YOUTUBE_COOKIES"])
+
+st.write(f"DEBUG: Cookie file size = {os.path.getsize(cookie_path)} bytes")    
     ydl_opts = {
        'format': 'bestaudio',
         'outtmpl': output_path,
