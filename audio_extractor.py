@@ -2,10 +2,15 @@ import whisper
 import yt_dlp
 import os
 import tempfile
+import streamlit as st
 
 def download_audio(youtube_url: str) -> str:
     temp_dir = tempfile.mkdtemp()
     output_path = os.path.join(temp_dir, "audio.%(ext)s")
+    
+    cookie_path = os.path.join(temp_dir, "cookies.txt")
+    with open(cookie_path, "w") as f:
+        f.write(st.secrets["YOUTUBE_COOKIES"])
     
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -16,11 +21,7 @@ def download_audio(youtube_url: str) -> str:
             'preferredquality': '192',
         }],
         'quiet': True,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android'],
-            }
-        },
+        'cookiefile': cookie_path,
     }
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
