@@ -2,17 +2,30 @@ import whisper
 import yt_dlp
 import os
 import tempfile
+import shutil
 import streamlit as st
 
+def _ensure_node_alias():
+    # yt-dlp looks for a command called "node", but Debian installs it as "nodejs"
+    if shutil.which("node") is None:
+        nodejs_path = shutil.which("nodejs")
+        if nodejs_path:
+            bin_dir = os.path.join(tempfile.gettempdir(), "nodebin")
+            os.makedirs(bin_dir, exist_ok=True)
+            symlink_path = os.path.join(bin_dir, "node")
+            if not os.path.exists(symlink_path):
+                os.symlink(nodejs_path, symlink_path)
+            os.environ["PATH"] = bin_dir + os.pathsep + os.environ.get("PATH", "")
+
 def download_audio(youtube_url: str) -> str:
+    _ensure_node_alias()
+
     temp_dir = tempfile.mkdtemp()
     output_path = os.path.join(temp_dir, "audio.%(ext)s")
 
     cookie_path = os.path.join(temp_dir, "cookies.txt")
     with open(cookie_path, "w") as f:
         f.write(st.secrets["YOUTUBE_COOKIES"])
-
-    st.write(f"DEBUG: Cookie file size = {os.path.getsize(cookie_path)} bytes")
 
     ydl_opts = {
         'format': 'best',
