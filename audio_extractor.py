@@ -7,14 +7,15 @@ import streamlit as st
 def download_audio(youtube_url: str) -> str:
     temp_dir = tempfile.mkdtemp()
     output_path = os.path.join(temp_dir, "audio.%(ext)s")
-    
-    cookie_path = os.path.join(temp_dir, "cookies.txt")
-with open(cookie_path, "w") as f:
-    f.write(st.secrets["YOUTUBE_COOKIES"])
 
-st.write(f"DEBUG: Cookie file size = {os.path.getsize(cookie_path)} bytes")    
+    cookie_path = os.path.join(temp_dir, "cookies.txt")
+    with open(cookie_path, "w") as f:
+        f.write(st.secrets["YOUTUBE_COOKIES"])
+
+    st.write(f"DEBUG: Cookie file size = {os.path.getsize(cookie_path)} bytes")
+
     ydl_opts = {
-       'format': 'bestaudio',
+        'format': 'bestaudio',
         'outtmpl': output_path,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
@@ -24,10 +25,10 @@ st.write(f"DEBUG: Cookie file size = {os.path.getsize(cookie_path)} bytes")
         'quiet': True,
         'cookiefile': cookie_path,
     }
-    
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([youtube_url])
-    
+
     audio_file = os.path.join(temp_dir, "audio.mp3")
     return audio_file
 
