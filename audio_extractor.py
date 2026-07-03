@@ -15,7 +15,7 @@ def download_audio(youtube_url: str) -> str:
     st.write(f"DEBUG: Cookie file size = {os.path.getsize(cookie_path)} bytes")
 
     ydl_opts = {
-        'format': 'bestaudio',
+        'format': 'best',
         'outtmpl': output_path,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
