@@ -22,7 +22,8 @@ def download_audio(youtube_url: str) -> str:
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
-        'quiet': True,
+        'quiet': False,
+        'verbose': True,
         'cookiefile': cookie_path,
     }
 
