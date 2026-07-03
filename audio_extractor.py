@@ -13,7 +13,7 @@ def download_audio(youtube_url: str) -> str:
         f.write(st.secrets["YOUTUBE_COOKIES"])
     
     ydl_opts = {
-        'format': 'bestaudio/best',
+        'format': 'bestaudio/best[ext=m4a]/bestaudio/best',
         'outtmpl': output_path,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
