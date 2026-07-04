@@ -2,47 +2,29 @@ import whisper
 import yt_dlp
 import os
 import tempfile
-import shutil
-import streamlit as st
-
-def _ensure_node_alias():
-    # yt-dlp looks for a command called "node", but Debian installs it as "nodejs"
-    if shutil.which("node") is None:
-        nodejs_path = shutil.which("nodejs")
-        if nodejs_path:
-            bin_dir = os.path.join(tempfile.gettempdir(), "nodebin")
-            os.makedirs(bin_dir, exist_ok=True)
-            symlink_path = os.path.join(bin_dir, "node")
-            if not os.path.exists(symlink_path):
-                os.symlink(nodejs_path, symlink_path)
-            os.environ["PATH"] = bin_dir + os.pathsep + os.environ.get("PATH", "")
 
 def download_audio(youtube_url: str) -> str:
-    _ensure_node_alias()
-
     temp_dir = tempfile.mkdtemp()
     output_path = os.path.join(temp_dir, "audio.%(ext)s")
-
-    cookie_path = os.path.join(temp_dir, "cookies.txt")
-    with open(cookie_path, "w") as f:
-        f.write(st.secrets["YOUTUBE_COOKIES"])
-
+    
     ydl_opts = {
-        'format': 'best',
+        'format': 'bestaudio/best',
         'outtmpl': output_path,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
-            'preferredquality': '192',
+            'preferredquality': '128',
         }],
-        'quiet': False,
-        'verbose': True,
-        'cookiefile': cookie_path,
+        'quiet': True,
+        'extractor_args': {'youtube': {'player_client': ['web']}},
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        },
     }
-
+    
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([youtube_url])
-
+    
     audio_file = os.path.join(temp_dir, "audio.mp3")
     return audio_file
 
