@@ -46,10 +46,21 @@ st.markdown("""
 tab_youtube, tab_upload = st.tabs(["🔗 YouTube URL", "📁 Upload Audio/Video"])
 
 with tab_youtube:
-    st.markdown("### Paste a YouTube URL")
+    st.markdown("### YouTube URL")
+    st.info("""
+    ⚠️ **Note:** Due to YouTube's bot detection on cloud servers, direct YouTube downloads may not work on the deployed version.
+    
+    **Recommended workflow:**
+    1. Copy your YouTube video URL
+    2. Go to [yt1s.com](https://yt1s.com) or [y2mate.com](https://y2mate.com) to download the audio as MP3
+    3. Upload the MP3 file in the **Upload Audio/Video** tab
+    
+    This gives you the best, most reliable results!
+    """)
+    
     youtube_url = st.text_input("", placeholder="https://www.youtube.com/watch?v=...")
     
-    if st.button("Extract Notes", key="yt_btn", use_container_width=True):
+    if st.button("Try Extract Notes", key="yt_btn", use_container_width=True):
         if not youtube_url:
             st.warning("Please enter a YouTube URL first.")
         else:
@@ -59,6 +70,7 @@ with tab_youtube:
                     st.success("Audio downloaded!")
                 except Exception as e:
                     st.error(f"Failed to download: {e}")
+                    st.info("💡 Try downloading the audio manually and using the Upload tab instead.")
                     st.stop()
             
             with st.spinner("Transcribing audio (this may take a few minutes)..."):
